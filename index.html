@@ -142,7 +142,7 @@ nav a{
 
 <script>
 
-const url = "https://script.google.com/macros/s/AKfycbzf6EsMTz4WLkOWso0ofaBEEYJ5Y5P2bwdGUh4ZQ7B5jFypMQr7vXcBExcA7aRepTLu/exec";
+const url = "https://script.google.com/macros/s/AKfycbzF0bM2tWAxX2lTgBP-6WnkJeV2kohQHPVV4FLubDH5NENFUgFH_Vs7ufepbyJ6NXa4/exec";
 
 fetch(url)
 .then(res => res.json())
@@ -158,34 +158,24 @@ Object.keys(n).forEach(k => {
   keys[k.trim()] = (n[k] || "").toString().trim();
 });
 
-// 🔥 FILTRO CORREGIDO
-const publicado = (keys["Publicado"] || "").toLowerCase();
-if(publicado !== "si" && publicado !== "sí") return;
+// 🔥 PUBLICADO FLEXIBLE
+const publicado = keys["Publicado"].toLowerCase();
+if(!publicado.includes("si")) return;
 
 const nombre = keys["Nombre de tu negocio"] || "Negocio";
-const descripcion = keys["Descripcion_final"] || keys["¿Qué vendes o qué servicio ofreces?"] || "Sin descripción";
+const descripcion = keys["Descripcion_final"] || keys["Describe tu negocio en 1-2 líneas"] || "Sin descripción";
 const telefono = (keys["WhatsApp del negocio"] || "").replace("+","");
 const zona = keys["¿En qué zona resides?"] || "";
 const email = keys["Correo del negocio"] || "";
 
-let img = keys["Imagen_final"] || keys["Link de imagen de tu negocio"] || "";
+// 🔥 IMAGEN SEGURA
+let img = keys["Imagen_final"];
 
-// 🔥 FIX DRIVE
-if(img.includes("drive.google.com")){
-let match = img.match(/\/d\/([a-zA-Z0-9_-]+)/) || img.match(/id=([a-zA-Z0-9_-]+)/);
-if(match){
-img = `https://drive.google.com/uc?export=view&id=${match[1]}`;
-}
+if(!img || img === "{}"){
+  img = "https://via.placeholder.com/300x150";
 }
 
-if(!img){
-img = "https://via.placeholder.com/300x150";
-}
-
-const img2 = keys["Imagen2"] || img;
-const img3 = keys["Imagen3"] || img;
-
-const dataModal = {nombre,descripcion,telefono,zona,email,img,img2,img3};
+const dataModal = {nombre,descripcion,telefono,zona,email,img,img2:img,img3:img};
 
 const card = `
 <div class="card" onclick='abrirModal(${JSON.stringify(dataModal)})'>
